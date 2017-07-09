@@ -1,0 +1,250 @@
+<div class="content-wrapper" style="margin-left:0px!important;">
+
+  <!-- Main content -->
+  <section class="content">
+
+    <!-- Graph & Statistics -->
+    <div class="row">
+      <!-- Left col -->
+      <div class="col-md-12">
+        <div class="box box-success">
+          <div class="box-header with-border">
+            <h3 class="box-title">Friendship graph</h3>
+            <div class="box-tools pull-right">
+              <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+              <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+            </div>
+          </div>
+
+          <!-- /.box-header -->
+
+          <div class="box-body no-padding">
+            <div class="row">
+              <div class="col-md-8 col-sm-12">
+                <div class="pad" style="width:100%;height:450px;">
+                  <test30hills-graph></test30hills-graph>
+                </div>
+              </div>
+
+              <div class="col-md-4 col-sm-12">
+                <div class="pad">
+
+                  <!-- choosen user -->
+                  <div *ngIf="user!=undefined">
+                    <!-- small box -->
+                    <div class="small-box bg-aqua">
+                      <div class="inner">
+                        <h3>{{user.name.first + " " + user.name.last}}</h3>
+                        <p>Gender: {{user.gender}} - Age: {{user.age != -1 ? user.age : 'unknown' }}</p>
+                        <p>Selected user</p>
+                      </div>
+                      <div class="icon">
+                        <i class="ion ion-android-person"></i>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- direct friends -->
+                  <div *ngIf="user!=undefined">
+                    <!-- small box -->
+                    <div class="small-box bg-green">
+                      <div class="inner">
+                        <h3>{{user.friends.length}}</h3>
+                        <p>Direct friends of {{user.name.first + " " + user.name.last}}</p>
+                      </div>
+                      <div class="icon">
+                        <i class="ion ion-android-people"></i>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- friends of friends -->
+                  <div *ngIf="friendsOfFriends!=undefined">
+                    <div class="small-box bg-red">
+                      <div class="inner">
+                        <h3>{{friendsOfFriends.length}}</h3>
+                        <p>Friends of friends</p>
+                      </div>
+                      <div class="icon">
+                        <i class="ion ion-android-people"></i>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- suggested friends -->
+                  <div *ngIf="suggestedFriends!=undefined">
+                    <!-- small box -->
+                    <div class="small-box bg-yellow">
+                      <div class="inner">
+                        <h3>{{suggestedFriends.length}}</h3>
+                        <p>Suggested friends</p>
+                      </div>
+                      <div class="icon">
+                        <i class="ion ion-person-add"></i>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+              <!-- /.col -->
+            </div>
+            <!-- /.row -->
+          </div>
+          <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+
+
+      </div>
+      <!-- /.col -->
+    </div>
+
+    <!-- Direct friends, friends of friends  & suggested friends-->
+
+    <div class="row">
+      <!-- direct friends -->
+      <div *ngIf="user!=undefined && mutual != undefined" class="col-md-4 col-xs-12">
+        <!-- TABLE: LATEST ORDERS -->
+        <div class="box box-info">
+          <div class="box-header with-border">
+            <h3 class="box-title">Direct friends of {{user.name.first + " " + user.name.last}}</h3>
+            <div class="box-tools pull-right">
+              <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+              <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+            </div>
+          </div>
+          <!-- /.box-header -->
+          <div class="box-body">
+            <div class="table-responsive">
+              <table class="table no-margin">
+                <thead>
+                  <tr>
+                    <th>User ID</th>
+                    <th>Fullname</th>
+                    <th>Age</th>
+                    <th>Gender</th>
+                    <th>Mutual friends</th>
+                  </tr>
+                </thead>
+                <tbody *ngFor="let friend of user.friendsObj">
+                  <tr>
+                    <td (click)="setUser(friend._id)"><a>{{friend.id}}</a></td>
+                    <td>{{friend.name.first + " " + friend.name.last}}</td>
+                    <td><span class="label label-success">{{friend.age != -1 ? friend.age : 'unknown' }}</span></td>
+                    <td>
+                      <div class="icon">
+                        <i class="ion ion-{{friend.gender}}"></i>
+                      </div>
+                    </td>
+                    <td>{{getNumberOfMutual(friend._id)}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- /.table-responsive -->
+          </div>
+          <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+      </div>
+
+      <!-- friends of friends -->
+      <div *ngIf="friendsOfFriends!=undefined" class="col-md-4 col-xs-12">
+        <div class="box box-info">
+          <div class="box-header with-border">
+            <h3 class="box-title">Friends of {{user.name.first}}'s friends</h3>
+            <div class="box-tools pull-right">
+              <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+              <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+            </div>
+          </div>
+          <div class="box-body">
+            <div *ngIf="friendsOfFriends.length>0" class="table-responsive">
+              <table class="table no-margin">
+                <thead>
+                  <tr>
+                    <th>User ID</th>
+                    <th>Fullname</th>
+                    <th>Age</th>
+                    <th>Gender</th>
+                  </tr>
+                </thead>
+                <tbody *ngFor="let friend of friendsOfFriends">
+                  <tr>
+                    <td (click)="setUser(friend._id)"><a>{{friend.id}}</a></td>
+                    <td>{{friend.name.first + " " + friend.name.last}}</td>
+                    <td><span class="label label-success">{{friend.age != -1 ? friend.age : 'unknown' }}</span></td>
+                    <td>
+                      <div class="icon">
+                        <i class="ion ion-{{friend.gender}}"></i>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div *ngIf="friendsOfFriends.length==0">
+              No friends of friends!
+            </div>
+            <!-- /.table-responsive -->
+          </div>
+          <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+      </div>
+
+      <!-- suggested firends -->
+      <div *ngIf="suggestedFriends!=undefined" class="col-md-4 col-xs-12">
+        <!-- TABLE: LATEST ORDERS -->
+        <div class="box box-info">
+          <div class="box-header with-border">
+            <h3 class="box-title">Suggested friends for {{user.name.first + " " + user.name.last}}</h3>
+            <div class="box-tools pull-right">
+              <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+              <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+            </div>
+          </div>
+          <!-- /.box-header -->
+          <div class="box-body">
+            <div *ngIf="suggestedFriends.length>0" class="table-responsive">
+              <table class="table no-margin">
+                <thead>
+                  <tr>
+                    <th>User ID</th>
+                    <th>Fullname</th>
+                    <th>Age</th>
+                    <th>Gender</th>
+                  </tr>
+                </thead>
+                <tbody *ngFor="let friend of suggestedFriends">
+                  <tr>
+                    <td (click)="setUser(friend._id)"><a>{{friend.id}}</a></td>
+                    <td>{{friend.name.first + " " + friend.name.last}}</td>
+                    <td><span class="label label-success">{{friend.age != -1 ? friend.age : 'unknown' }}</span></td>
+                    <td>
+                      <div class="icon">
+                        <i class="ion ion-{{friend.gender}}"></i>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div *ngIf="suggestedFriends.length==0">
+              No recommended friendsip!
+            </div>
+            <!-- /.table-responsive -->
+          </div>
+          <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+      </div>
+
+
+    </div>
+
+  </section>
+  <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
